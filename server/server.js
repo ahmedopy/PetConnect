@@ -1,40 +1,45 @@
-const dotenv = require('dotenv');
-dotenv.config();
+const express = require("express");
+const cors = require("cors");
+const mongoose = require("mongoose");
+const path = require("path");
+const http = require("http");
+const { Server } = require("socket.io");
+require("dotenv").config();
 
-const http = require('http');
-const { Server } = require('socket.io');
-const app = require('./src/app');
-const connectDB = require('./src/config/db');
+const reportRoutes = require("./routes/reportroutes");
+
+const app = require("./src/app");
+const connectDB = require("./src/config/db");
 
 connectDB();
 
 const PORT = process.env.PORT || 5000;
-const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
+const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
 
 const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
     origin: CLIENT_URL,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   },
 });
 
-app.set('io', io);
+app.set("io", io);
 
-io.on('connection', (socket) => {
-  console.log('Client connected:', socket.id);
+io.on("connection", (socket) => {
+  console.log("Client connected:", socket.id);
 
-  socket.on('join-booking', (bookingId) => {
+  socket.on("join-booking", (bookingId) => {
     socket.join(bookingId);
   });
 
-  socket.on('groomer-location-update', ({ bookingId, coordinates }) => {
-    socket.to(bookingId).emit('location-updated', coordinates);
+  socket.on("groomer-location-update", ({ bookingId, coordinates }) => {
+    socket.to(bookingId).emit("location-updated", coordinates);
   });
 
-  socket.on('disconnect', () => {
-    console.log('Client disconnected:', socket.id);
+  socket.on("disconnect", () => {
+    console.log("Client disconnected:", socket.id);
   });
 });
 
