@@ -1,8 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const path = require("path");
 const http = require("http");
+const path = require("path");
 const { Server } = require("socket.io");
 require("dotenv").config();
 
@@ -26,6 +26,8 @@ const io = new Server(server, {
 });
 
 app.set("io", io);
+
+app.use("/api/reports", reportRoutes);
 
 io.on("connection", (socket) => {
   console.log("Client connected:", socket.id);
