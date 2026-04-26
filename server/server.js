@@ -4,7 +4,9 @@ const mongoose = require("mongoose");
 const http = require("http");
 const path = require("path");
 const { Server } = require("socket.io");
-require("dotenv").config();
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 const reportRoutes = require("./routes/reportroutes");
 
