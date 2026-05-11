@@ -6,6 +6,7 @@ function RescueRequestCard({
   onReject,
   onMarkAsSeen,
   onComplete,
+  onInprogress,
 }) {
   return (
     <div
@@ -105,9 +106,10 @@ function RescueRequestCard({
         >
           Status: {request.status}
         </p>
+
       </div>
 
-      {request.status === "Open" ? (
+      {request.status === "Open"? (
         <div
           style={{
             display: "flex",
@@ -154,7 +156,7 @@ function RescueRequestCard({
             Reject
           </button>
         </div>
-      ) : request.status === "Accepted" ? (
+      ) : request.status === "Accepted" || request.status === "Inprogress" ? (
         <div
           style={{
             display: "flex",
@@ -182,6 +184,29 @@ function RescueRequestCard({
           >
             Completed
           </button>
+          {request.status === "Accepted" && (
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onInprogress(request.rescueId);
+            }}
+            style={{
+              padding: "10px 18px",
+              backgroundColor: "#2563eb",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontWeight: "600",
+              fontSize: "15px",
+            }}
+          >
+            inprogress
+          </button>
+          )}
+
         </div>
       ) : null}
     </div>

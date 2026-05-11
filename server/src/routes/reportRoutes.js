@@ -22,6 +22,7 @@ const {
   markAsSuccessStory,
   getSuccessStories,
   removeSuccessStory,
+  inprogressReport,
 } = require("../controllers/reportController");
 
 const router = express.Router();
@@ -43,9 +44,11 @@ router.post("/", upload.array("media", 5), createReport);
 router.get("/open", getOpenReports);
 router.get("/accepted", getAcceptedReports);
 
+
 router.put("/:rescueId/accept", acceptReport);
 router.put("/:rescueId/reject", rejectReport);
 router.put("/:rescueId/complete", completeReport);
+
 
 router.put("/:rescueId/tracking", updateTracking);
 router.get("/tracking/active/all", getActiveTrackingReports);
@@ -58,5 +61,6 @@ router.put(
 );
 router.get("/success-stories", getSuccessStories);
 router.put("/:rescueId/remove-success-story", removeSuccessStory);
+router.patch("/:rescueId/inprogress", inprogressReport);
 
 module.exports = router;

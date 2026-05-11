@@ -359,6 +359,29 @@ function RescuerDashboardPage() {
     }
   };
 
+  const handleInprogress = async (rescueId) => {
+    try {
+      await axios.patch(`${API}/api/reports/${rescueId}/inprogress`);
+
+      setActiveRescues((prev) =>
+        prev.map((request) =>
+          request.rescueId === rescueId
+            ? { ...request, status: "Inprogress" }
+            : request
+        )
+      );
+
+      setCurrentRescueId(rescueId);
+      setShowStoryPopup(false);
+      setShowStoryForm(false);
+
+    } catch (error) {
+      console.error("Error completing report:", error);
+      toast.error("Failed to complete rescue.");
+    }
+  };
+
+
   const handleSubmitStory = async () => {
   try {
     const formData = new FormData();
@@ -396,9 +419,10 @@ function RescuerDashboardPage() {
         request.rescueId === rescueId
           ? { ...request, isNew: false }
           : request
-      )
+      ) 
     );
   };
+
 
   return (
     <SiteLayout>
@@ -509,6 +533,7 @@ function RescuerDashboardPage() {
                 onReject={() => {}}
                 onMarkAsSeen={() => {}}
                 onComplete={handleComplete}
+                onInprogress={handleInprogress}
               />
             ))
           )}
@@ -550,6 +575,7 @@ function RescuerDashboardPage() {
                 onReject={handleReject}
                 onMarkAsSeen={handleMarkAsSeen}
                 onComplete={() => {}}
+                onInprogress={() => {}}
               />
             ))
           )}

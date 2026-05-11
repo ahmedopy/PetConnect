@@ -22,7 +22,7 @@ const parseOrigins = (...rawValues) => {
 const getAllowedOrigins = () =>
   parseOrigins(process.env.CLIENT_URLS, process.env.CLIENT_URL, process.env.FRONTEND_URL);
 
-const isAllowedOrigin = (origin) => {
+const isAllowedOrigin = (origin) => {  // Allow requests with no origin (e.g., mobile apps, curl, postman, server to server)
   if (!origin) {
     return true;
   }

@@ -19,6 +19,7 @@ const createReport = async (req, res) => {
       media: files.map((file) => file.filename),
       status: "Open",
       createdAt: new Date(),
+      manualstatus: "Open",
       trackingLogs: [
         {
           eventType: "created",
@@ -122,6 +123,47 @@ const acceptReport = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+
+const inprogressReport = async (req, res) => {
+  try {
+    const { rescueId } = req.params;
+
+    const report = await Report.findOne({ rescueId });
+
+    if (!report) {
+      return res.status(404).json({ message: "Report not found" });
+    }
+
+    report.status = "Inprogress";
+    report.acceptedAt = new Date();
+
+    report.trackingLogs.push({
+      eventType: "inprogress",
+      message: "Rescuer accepted the case",
+      timestamp: new Date(),
+    });
+
+    const updatedReport = await report.save();
+
+    const io = req.app.get("io");
+
+    if (io) {
+      io.emit("rescue_status_updated", {
+        rescueId: updatedReport.rescueId,
+        status: updatedReport.status,
+        acceptedAt: updatedReport.acceptedAt,
+        trackingLogs: updatedReport.trackingLogs,
+      });
+    }
+
+    res.status(200).json(updatedReport);
+  } catch (error) {
+    console.error("Error accepting report:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 
 const rejectReport = async (req, res) => {
   try {
@@ -309,7 +351,7 @@ const getTrackingByRescueId = async (req, res) => {
 const getActiveTrackingReports = async (req, res) => {
   try {
     const reports = await Report.find({
-      status: { $in: ["Open", "Accepted"] },
+      status: { $in: ["Open", "Accepted","InProgress"] },
     }).sort({ createdAt: -1 });
 
     res.status(200).json(reports);
@@ -480,4 +522,4 @@ module.exports = {
   markAsSuccessStory,
   getSuccessStories,
   removeSuccessStory,
-};
+  inprogressReport,};
